@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>簡易搜尋網站</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+      background: #f9f9f9;
+    }
+    input {
+      padding: 10px;
+      width: 300px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      cursor: pointer;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #results {
+      margin-top: 30px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+    .item {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+    }
+    .item img {
+      max-width: 120px;
+      border-radius: 5px;
+      object-fit: cover;
+    }
+    .item-content h3 {
+      margin: 0 0 8px 0;
+      font-size: 1.2em;
+    }
+    .item-content p {
+      margin: 0;
+      color: #555;
+    }
+    .item-content small {
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>簡易搜尋網站</h1>
+  <input type="text" id="searchInput" placeholder="輸入關鍵字..." />
+  <button onclick="searchData()">搜尋</button>
+
+  <div id="results"></div>
+
+  <script>
+    const data = [
+      // 動漫
+      { name: "火影忍者", info: "經典忍者動漫", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/9/94/NarutoCoverTankobon1.jpg" },
+      { name: "鬼滅之刃", info: "炭治郎和妹妹的故事", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/3/3a/Kimetsu_no_Yaiba_Volume_1.png" },
+      { name: "進擊的巨人", info: "巨人與人類的戰爭", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/f/f8/Attack_on_Titan_volume_1_cover.jpg" },
+      { name: "海賊王", info: "尋找 One Piece 的冒險", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/2/29/One_Piece_1.png" },
+      { name: "死亡筆記本", info: "天才與死神的鬥智", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/6/6f/Death_Note_Volume_1_cover.jpg" },
+      { name: "刀劍神域", info: "虛擬世界的冒險", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/3/3e/Sword_Art_Online_light_novel_volume_1_cover.jpg" },
+      { name: "咒術迴戰", info: "術師與咒靈的戰鬥", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/0/0f/Jujutsu_Kaisen_volume_1_cover.jpg" },
+      { name: "名偵探柯南", info: "少年偵探破解案件", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/2/2d/Detective_Conan_volume_1.jpg" },
+      { name: "東京喰種", info: "人類與喰種的衝突", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/d/d2/Tokyo_Ghoul_volume_1_cover.jpg" },
+      { name: "我的英雄學院", info: "超能力英雄的故事", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/3/30/My_Hero_Academia_Volume_1_cover.jpg" },
+      { name: "銀魂", info: "幽默與熱血的江戶時代故事", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/c/c5/Gintama_cover_vol1.jpg" },
+      { name: "櫻桃小丸子", info: "日常生活搞笑漫畫", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/3/3a/Chibi_Maruko-chan_cover.jpg" },
+      { name: "魔法少女小圓", info: "黑暗魔法少女故事", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/a/a7/Mahou_Shoujo_Madoka_Magica_key_visual.jpg" },
+      { name: "鋼之鍊金術師", info: "鍊金術冒險故事", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/c/c6/FullmetalAlchemist2003.jpg" },
+      { name: "七龍珠", info: "熱血格鬥冒險", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/0/02/Dragon_Ball_manga_cover_1.jpg" },
+      { name: "幽遊白書", info: "靈界偵探冒險", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/f/fd/YuYuHakusho.jpg" },
+      { name: "妖精的尾巴", info: "魔法公會冒險故事", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/0/04/Fairytailcover.jpg" },
+      { name: "鋼彈", info: "機器人戰爭", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/e/e1/Gundam_cover_art.jpg" },
+      { name: "海賊王電影：狂熱行動", info: "海賊王電影版", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/7/7e/One_Piece_Film_Red_poster.jpg" },
+      { name: "黑執事", info: "黑暗幻想故事", category: "動漫", image: "https://upload.wikimedia.org/wikipedia/en/3/3f/Black_Butler_Anime_Volume_1_DVD_Cover.jpg" },
+
+      // 藝人
+      { name: "周杰倫", info: "華語流行音樂巨星", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/8/82/Jay_Chou_at_2014.jpg" },
+      { name: "Ariana Grande", info: "美國流行歌手與演員", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/5/58/Ariana_Grande_2015.jpg" },
+      { name: "Taylor Swift", info: "全球暢銷美國創作歌手", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/f/f6/Taylor_Swift_3_-_2019_by_Glenn_Francis.jpg" },
+      { name: "BTS 防彈少年團", info: "韓國超人氣男子團體", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/d/d3/BTS_at_the_2019_Melon_Music_Awards_%283%29.jpg" },
+      { name: "Lady Gaga", info: "美國流行歌手與演員", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Lady_Gaga_2_2010.jpg" },
+      { name: "周華健", info: "華語經典歌手", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/9/9c/Emil_Chou_by_GIS_Li%2C_2015.jpg" },
+      { name: "張惠妹", info: "華語流行天后", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/c/cb/A-Mei_2008_07_14.jpg" },
+      { name: "Ed Sheeran", info: "英國創作歌手", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/4/4f/Ed_Sheeran_2013.jpg" },
+      { name: "Billie Eilish", info: "美國年輕歌手", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/e/e7/Billie_Eilish_2_%28cropped%29.jpg" },
+      { name: "林俊傑", info: "華語流行歌手與作曲人", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/f/f9/JJ_Lin_2012.jpg" },
+      { name: "周星馳", info: "香港喜劇大師", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/6/6c/Stephen_Chow_cropped.jpg" },
+      { name: "張學友", info: "華語歌神", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Jacky_Cheung_%282016%29.jpg" },
+      { name: "王菲", info: "華語天后", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/f/f5/Faye_Wong_2007_02.jpg" },
+      { name: "Beyoncé", info: "美國流行歌手和表演者", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Beyoncé_Knowles.jpg" },
+      { name: "林宥嘉", info: "華語創作歌手", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Yoga_Lin_in_2015_2.jpg" },
+      { name: "Selena Gomez", info: "美國歌手與演員", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/4/4a/Selena_Gomez_2019.jpg" },
+      { name: "陳奕迅", info: "華語流行歌手", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/e/ea/EasonChan2006.jpg" },
+      { name: "Bruno Mars", info: "美國歌手與製作人", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/6/66/Bruno_Mars_2010.jpg" },
+      { name: "蔡依林", info: "華語流行歌手", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/3/38/Jolin_Tsai_2018.jpg" },
+      { name: "Kanye West", info: "美國饒舌歌手與製作人", category: "藝人", image: "https://upload.wikimedia.org/wikipedia/commons/8/87/Kanye_West_at_the_2009_MTV_Video_Music_Awards_2.jpg" },
+
+      // 電影
+      { name: "復仇者聯盟", info: "超級英雄大集合", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/f/f9/The_Avengers_%282012_film%29_poster.jpg" },
+      { name: "星際大戰", info: "科幻經典系列", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/8/87/StarWarsMoviePoster1977.jpg" },
+      { name: "哈利波特", info: "魔法世界冒險", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/d/d7/Harry_Potter_and_the_Sorcerer%27s_Stone_poster.jpg" },
+      { name: "指環王", info: "奇幻史詩", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/8/87/Ringstrilogyposter.jpg" },
+      { name: "復仇者聯盟：終局之戰", info: "超級英雄最終戰役", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/0/0d/Avengers_Endgame_poster.jpg" },
+      { name: "侏羅紀公園", info: "恐龍復活的故事", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/e/e7/Jurassic_Park_poster.jpg" },
+      { name: "變形金剛", info: "機器人戰爭", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/6/66/Transformers_Age_of_Extinction_poster.jpg" },
+      { name: "鐵達尼號", info: "經典愛情故事", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/2/2e/Titanic_poster.jpg" },
+      { name: "阿凡達", info: "科幻世界探險", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/b/b0/Avatar-Teaser-Poster.jpg" },
+      { name: "冰雪奇緣", info: "魔法公主的故事", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/0/05/Frozen_%282013_film%29_poster.jpg" },
+      { name: "蝙蝠俠：黑暗騎士", info: "經典超級英雄電影", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/8/8a/Dark_Knight.jpg" },
+      { name: "駭客任務", info: "科幻經典電影", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/c/c1/The_Matrix_Poster.jpg" },
+      { name: "星際穿越", info: "太空探險電影", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg" },
+      { name: "蜘蛛人：新宇宙", info: "動畫超級英雄電影", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/f/f9/Spider-Man_Into_the_Spider-Verse_poster.jpg" },
+      { name: "奇異博士", info: "漫威魔法英雄", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/0/0d/Doctor_Strange_poster.jpg" },
+      { name: "星際大戰：原力覺醒", info: "星戰系列續集", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/7/7f/Star_Wars_The_Force_Awakens_Theatrical_Poster.jpg" },
+      { name: "冰與火之歌：權力遊戲", info: "史詩奇幻劇集", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/d/d8/Game_of_Thrones_Season_8.jpg" },
+      { name: "黑豹", info: "漫威非洲超級英雄", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/9/9f/Black_Panther_film_poster.jpg" },
+      { name: "侏羅紀世界", info: "恐龍復活冒險", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/e/e7/Jurassic_World_poster.jpg" },
+      { name: "玩具總動員", info: "經典動畫電影", category: "電影", image: "https://upload.wikimedia.org/wikipedia/en/1/13/Toy_Story.jpg" },
+
+      // 遊戲
+      { name: "英雄聯盟", info: "多人線上戰鬥競技場", category: "遊戲", image: "https://upload.wikimedia.org/wikipedia/en/7/77/League_of_Legends_logo.png" },
+      { name: "魔獸世界", info: "大型多人線上角色扮演", category: "遊戲", image: "https://upload.wikimedia.org/wikipedia/en/9/97/World_of_Warcraft_logo.jpg" },
+      { name: "寶可夢", info: "捕捉與戰鬥的遊戲系列", category: "遊戲", image: "https://upload.wikimedia.org/wikipedia/en/0/0d/Pokémon_logo.svg" }
+    ];
+
+    function searchData() {
+      const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      if (!keyword) {
+        resultsDiv.innerHTML = "<p>請輸入關鍵字。</p>";
+        return;
+      }
+
+      const filtered = data.filter(item =>
+        item.name.toLowerCase().includes(keyword) ||
+        item.info.toLowerCase().includes(keyword) ||
+        item.category.toLowerCase().includes(keyword)
+      );
+
+      if (filtered.length === 0) {
+        resultsDiv.innerHTML = "<p>找不到結果。</p>";
+        return;
+      }
+
+      filtered.forEach(item => {
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+
+        const img = document.createElement("img");
+        img.src = item.image;
+        img.alt = item.name;
+
+        const content = document.createElement("div");
+        content.className = "item-content";
+        content.innerHTML = `<h3>${item.name}</h3><p>${item.info}</p><small>分類：${item.category}</small>`;
+
+        itemDiv.appendChild(img);
+        itemDiv.appendChild(content);
+
+        resultsDiv.appendChild(itemDiv);
+      });
+    }
+  </script>
+
+</body>
+</html>
